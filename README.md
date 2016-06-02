@@ -59,6 +59,7 @@ server.register([{
        options: {
            validVersions: validVersions,
 		   defaultVersion: defaultVersion,
+		   descriptor: 'querystring',
            getVersion: (request, options) => {
 
            		// Extract the version from the querystring parameter 'version'
@@ -217,6 +218,7 @@ The options for the plugin are validated on plugin registration.
 - `passiveMode` (optional) is a boolean. Allows to bypass when no headers are supplied. Useful when you have serve other content like documentation and reduces overhead on processing those.
 - `basePath` (optional) is a string. In case we have a base path different from `/` (example: `/api/`). Per default this is `/`.
 - `getVersion` (required, if no vendorName defined) is a string. Return an integer to define the requested version, or null/undefined if no version was provided.
+- `descriptor` (optional, required to be unique for multiple plugins) is a string, used to describe the versioning technique. This data is available on the request.plugins['hapi-api-plugin'] object.
 - `invalidVersionErrorCode` (optional) is a integer, used to respond to invalid versions. Defaults to 415.
 
 *NOTE: One of `vendorName` or the `getVersion` function must be defined*
@@ -244,6 +246,20 @@ getVersion: (request, options) => { return parseInt(request.query.version, 10); 
 ```
 
 For example, to return a version defined in the querystring.
+
+##### Access plugin data from a request
+
+```
+handler: function (request, reply) {
+
+	const pluginData = request.plugins['hapi-api-version'];
+	console.log(pluginData.apiVersion); // the API version
+	console.log(pluginData.useDefault); // true if the default API version was assigned
+	console.log(pluginData.count); // the number of plugins used to determine the API version
+	console.log(pluginData.descriptor); // 'default' if the default API version was assigned, otherwise the descriptor of the plugin used to determine the API version
+	// ...
+}
+```
 
 ## Running the tests
 

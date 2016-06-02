@@ -264,6 +264,61 @@ describe('Plugin registration', () => {
             }
         });
     });
+
+    it('should fail if multiple plugins registered with the same descriptor', (done) => {
+
+        server.register([{
+            register: require('../'),
+            options: {
+                validVersions: [1, 2],
+                defaultVersion: 1,
+                vendorName: 'mysuperapi'
+            }
+        }, {
+            register: require('../'),
+            options: {
+                validVersions: [1, 2],
+                defaultVersion: 1,
+                getVersion: (request, opts) => {
+
+                    return null;
+                }
+            }
+        }], (err) => {
+
+            if (err) {
+                done();
+            }
+        });
+    });
+
+    it('should succeed if multiple plugins registered with the unique descriptors', (done) => {
+
+        server.register([{
+            register: require('../'),
+            options: {
+                validVersions: [1, 2],
+                defaultVersion: 1,
+                vendorName: 'mysuperapi'
+            }
+        }, {
+            register: require('../'),
+            options: {
+                validVersions: [1, 2],
+                defaultVersion: 1,
+                descriptor: 'custom',
+                getVersion: (request, opts) => {
+
+                    return null;
+                }
+            }
+        }], (err) => {
+
+            if (!err) {
+                done();
+            }
+        });
+    });
 });
 
 describe('MediaType Versioning', () => {
@@ -1515,6 +1570,7 @@ describe('Multiple plugin registration', () => {
                 validVersions: validVersions,
                 defaultVersion: defaultVersion,
                 basePath: basePath,
+                descriptor: 'querystring',
                 getVersion: (request, opts) => {
 
                     const version = request.query.version;
