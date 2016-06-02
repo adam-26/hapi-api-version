@@ -58,8 +58,8 @@ server.register([{
        register: HapiApiVersionPlugin,
        options: {
            validVersions: validVersions,
-		   defaultVersion: defaultVersion,
-		   descriptor: 'querystring',
+           defaultVersion: defaultVersion,
+           descriptor: 'querystring',
            getVersion: (request, options) => {
 
            		// Extract the version from the querystring parameter 'version'
@@ -221,9 +221,31 @@ The options for the plugin are validated on plugin registration.
 - `descriptor` (optional, required to be unique for multiple plugins) is a string, used to describe the versioning technique. This data is available on the request.plugins['hapi-api-plugin'] object.
 - `invalidVersionErrorCode` (optional) is a integer, used to respond to invalid versions. Defaults to 415.
 
-*NOTE: One of `vendorName` or the `getVersion` function must be defined*
+*NOTE: One of  `vendorName`  or the  `getVersion`  function must be defined*
 
 ### Getting the requested API version in the handler
+
+```
+handler: function (request, reply) {
+
+	const pluginData = request.plugins['hapi-api-version'];
+
+	// the API version
+	console.log(pluginData.apiVersion);
+
+	// true if the default API version was assigned
+	console.log(pluginData.useDefault);
+
+	// the number of plugins used to determine the API version
+	console.log(pluginData.count);
+
+	// 'default' if the default API version was assigned,
+	// otherwise the descriptor of the plugin used to
+	// determine the API version
+	console.log(pluginData.descriptor);
+	// ...
+}
+```
 
 You can get the API version requested by the user (or maybe the default version if nothing was requested) in the handler. It is stored in `request.plugins['hapi-api-version'].apiVersion`.
 
@@ -247,19 +269,6 @@ getVersion: (request, options) => { return parseInt(request.query.version, 10); 
 
 For example, to return a version defined in the querystring.
 
-##### Access plugin data from a request
-
-```
-handler: function (request, reply) {
-
-	const pluginData = request.plugins['hapi-api-version'];
-	console.log(pluginData.apiVersion); // the API version
-	console.log(pluginData.useDefault); // true if the default API version was assigned
-	console.log(pluginData.count); // the number of plugins used to determine the API version
-	console.log(pluginData.descriptor); // 'default' if the default API version was assigned, otherwise the descriptor of the plugin used to determine the API version
-	// ...
-}
-```
 
 ## Running the tests
 
