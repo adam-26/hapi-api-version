@@ -1,12 +1,16 @@
 # hapi-api-version
 
-[![Build Status](https://travis-ci.org/p-meier/hapi-api-version.svg?branch=master)](https://travis-ci.org/p-meier/hapi-api-version)
+[![Build Status](https://travis-ci.org/adam-26/hapi-api-version.svg?branch=master)](https://travis-ci.org/adam-26/hapi-api-version)
 
 An API versioning plugin for [hapi](http://hapijs.com/).
 
+*Forked from: https://github.com/p-meier/hapi-api-version*
+
 ## Features / Goals
 
-- Supports versioning via `accept` and custom header (default `api-version`) as described on [troyhunt.com](http://www.troyhunt.com/2014/02/your-api-versioning-is-wrong-which-is.html)
+- Supports versioning using mediaTypes defined via `accept` header, as described on [github.com](https://developer.github.com/v3/media/)
+- Allows custom function to extract the version number from a request
+- Allows the plugin to be registered multiple times (for example, you could apply the plugin multiple times - each with a custom function to provide multiple options to specify an api version, such as querystring, url path and the default mediaType accept header)
 - 100% test coverage
 - Easy to use and flexible
 - Follows the [hapi coding conventions](http://hapijs.com/styleguide)
@@ -36,14 +40,29 @@ server.connection({
     port: 3000
 });
 
-server.register({
-    register: require('hapi-api-version'),
+server.register([{
+    register: require('@adam-26/hapi-api-version'),
     options: {
         validVersions: [1, 2],
         defaultVersion: 2,
         vendorName: 'mysuperapi'
     }
-}, (err) => {
+}, {
+       register: require('@adam-26/hapi-api-version'),
+       options: {
+           validVersions: [1, 2],
+           defaultVersion: 2,
+           getVersion: (request, options) => {
+
+           		// Extract the version from the querystring parameter 'version'
+           		if (request.query.version) {
+           			return parseInt(request.query.version);
+           		}
+
+           		return null;
+           }
+       }
+}], (err) => {
 
     //Add routes here...
 
@@ -176,8 +195,8 @@ A complete working example with routes can be found in the `example` folder.
 
 **hapi-api-version** works internally with rewriting urls. The process is very simple:
 
-1. Check if an `accept` header OR a custom header (default `api-version`) is present and extract the version
-2. If a version was extracted check if it is valid, otherwise respond with a status code `400`
+1. Check if an `accept` header OR a custom getVersion function is present and extract the version
+2. If a version was extracted check if it is valid, otherwise respond with a status code `415` (The HTTP response code can be configured)
 3. If no version was extracted (e.g. no headers sent) use the default version
 4. Check if a versioned route (like `/v2/users`) exists -> if so rewrite the url from `/users` to `/v2/users`, otherwise do nothing
 
@@ -187,14 +206,17 @@ The options for the plugin are validated on plugin registration.
 
 - `validVersions` (required) is an array of integer values. Specifies all valid api versions you support. Anything else will be considered invalid and the plugin responds with a status code `400`.
 - `defaultVersion` (required) is an integer that is included in `validVersions`. Defines which version to use if no headers are sent.
-- `vendorName` (required) is a string. Defines the vendor name used in the `accept` header.
-- `versionHeader` (optional) is a string. Defines the name of the custom header to use. Per default this is `api-version`.
+- `vendorName` (required, if no getVersion function defined) is a string. Defines the vendor name used in the `accept` header.
 - `passiveMode` (optional) is a boolean. Allows to bypass when no headers are supplied. Useful when you have serve other content like documentation and reduces overhead on processing those.
 - `basePath` (optional) is a string. In case we have a base path different from `/` (example: `/api/`). Per default this is `/`.
+- `getVersion` (required, if no vendorName defined) is a string. Defines the vendor name used in the `accept` header.
+- `invalidVersionErrorCode` (optionsl) is a integer, used to respond to invalid versions. Defaults to 415.
+
+* NOTE: One of `vendorName` or the `getVersion` function must be defined *
 
 ### Getting the requested API version in the handler
 
-You can get the API version requested by the user (or maybe the default version if nothing was requested) in the handler. It is stored in `request.pre.apiVersion`.
+You can get the API version requested by the user (or maybe the default version if nothing was requested) in the handler. It is stored in `request.plugins['hapi-api-version'].apiVersion`.
 
 ### Headers
 
@@ -203,18 +225,18 @@ The headers must have a specific format to be correctly recognized and processed
 ##### Accept header
 
 ```
-Accept: application/vnd.mysuperapi.v2+json
+accept: application/vnd.mysuperapi.v2+json
 ```
 
 Here `mysuperapi` is what was specified in options as `vendorName`. If the vendor name does not match, the default version will be used instead.
 
-##### Custom header
+##### Custom getVersion function
 
 ```
-api-version: 2
+getVersion: (request, options) => { return parseInt(request.query.version, 10); }
 ```
 
-Here `api-version` is the default name of the custom header. It can be specified in the options via `versionHeader`.
+For example, to return a version defined in the querystring.
 
 ## Running the tests
 

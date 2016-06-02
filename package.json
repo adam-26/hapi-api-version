@@ -1,15 +1,15 @@
 {
-  "name": "hapi-api-version",
-  "version": "1.1.0",
+  "name": "@adam-26/hapi-api-version",
   "description": "An API versioning plugin for hapi.",
   "main": "index.js",
   "scripts": {
     "test": "lab -a code -t 100 -L -v",
-    "test-coverage": "lab -c -a code -r html -o coverage/coverage.html"
+    "test-coverage": "lab -c -a code -r html -o coverage/coverage.html",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/p-meier/hapi-api-version.git"
+    "url": "https://github.com/adam-26/hapi-api-version.git"
   },
   "keywords": [
     "hapi",
@@ -28,7 +28,8 @@
   "devDependencies": {
     "code": "^2.0.1",
     "hapi": "^13.4.0",
-    "lab": "^10.5.1"
+    "lab": "^10.5.1",
+    "semantic-release": "^4.3.5"
   },
   "dependencies": {
     "boom": "^3.1.1",

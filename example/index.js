@@ -31,7 +31,7 @@ server.register({
 
             // Return the api-version which was requested
             return reply({
-                version: request.pre.apiVersion
+                version: request.plugins['hapi-api-version'].apiVersion
             });
         }
     });
@@ -94,7 +94,7 @@ server.register({
         path: '/users/simple',
         handler: function (request, reply) {
 
-            const version = request.pre.apiVersion;
+            const version = request.plugins['hapi-api-version'].apiVersion;
 
             if (version === 1) {
                 return reply(usersVersion1);
