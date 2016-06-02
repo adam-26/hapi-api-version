@@ -88,17 +88,16 @@ There are typically two common use cases which this plugin is designed to addres
 #### Unversioned routes
 
 This is the type of routes which never change regardless of the api version. The route definition and the handler stay the same.
+No `request.plugins['hapi-api-version']` data is available for unversioned routes.
 
 ```javascript
 server.route({
     method: 'GET',
-    path:'/loginStatus',
+    path:'/healthcheck',
     handler: function (request, reply) {
 
-        const loggedIn = ...;
-
         return reply({
-          loggedIn: loggedIn
+          status: 'healthy'
         });
     }
 });
@@ -108,39 +107,9 @@ server.route({
 
 This is the type of routes which actually change.
 
-##### Handler only
-
-In simple cases where just the handler differs you could use this approach.
-
-```javascript
-const usersVersion1 = [{
-    name: 'Peter Miller'
-}];
-
-const usersVersion2 = [{
-    firtname: 'Peter',
-    lastname: 'Miller'
-}];
-
-server.route({
-    method: 'GET',
-    path: '/users',
-    handler: function (request, reply) {
-
-        const version = request.pre.apiVersion;
-
-        if (version === 1) {
-            return reply(usersVersion1);
-        }
-
-        return reply(usersVersion2);
-    }
-});
-```
-
 ##### Different route definitions per version
 
-Sometimes it is required to change not just the handler but also the route definition itself.
+Each route definition is version specific.
 
 ```javascript
 const usersVersion1 = [{

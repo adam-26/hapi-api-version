@@ -85,25 +85,6 @@ server.register({
 
     });
 
-    // Add a versioned route - This is a simple version of the '/users' route where just the handlers
-    // differ and even those just a little. It maybe is the preferred option if just the formatting of
-    // the response differs between versions.
-
-    server.route({
-        method: 'GET',
-        path: '/users/simple',
-        handler: function (request, reply) {
-
-            const version = request.plugins['hapi-api-version'].apiVersion;
-
-            if (version === 1) {
-                return reply(usersVersion1);
-            }
-
-            return reply(usersVersion2);
-        }
-    });
-
     // Start the server
     server.start((err) => {
 
