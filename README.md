@@ -23,7 +23,7 @@ Runs with Node >=4 and hapi >=10 which is tested with Travis CI.
 ## Installation
 
 ```
-npm install --save hapi-api-version
+npm install --save @adam-26/hapi-api-version
 ```
 
 ## Usage
@@ -31,7 +31,7 @@ npm install --save hapi-api-version
 Register it with the server:
 
 ```javascript
-'use strict';
+import * as HapiApiVersionPlugin from '@adam-26/hapi-api-version';
 
 const Hapi = require('hapi');
 
@@ -40,18 +40,21 @@ server.connection({
     port: 3000
 });
 
+const validVersions = [1, 2];
+const defaultVersion = 2;
+
 server.register([{
-    register: require('@adam-26/hapi-api-version'),
+    register: HapiApiVersionPlugin,
     options: {
-        validVersions: [1, 2],
-        defaultVersion: 2,
+        validVersions: validVersions,
+        defaultVersion: defaultVersion,
         vendorName: 'mysuperapi'
     }
 }, {
-       register: require('@adam-26/hapi-api-version'),
+       register: HapiApiVersionPlugin,
        options: {
-           validVersions: [1, 2],
-           defaultVersion: 2,
+           validVersions: validVersions,
+		   defaultVersion: defaultVersion,
            getVersion: (request, options) => {
 
            		// Extract the version from the querystring parameter 'version'
