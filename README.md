@@ -204,15 +204,15 @@ A complete working example with routes can be found in the `example` folder.
 
 The options for the plugin are validated on plugin registration.
 
-- `validVersions` (required) is an array of integer values. Specifies all valid api versions you support. Anything else will be considered invalid and the plugin responds with a status code `400`.
+- `validVersions` (required) is an array of integer values. Specifies all valid api versions you support. Anything else will be considered invalid and the plugin responds with a status code as defined by `invalidVersionErrorCode`.
 - `defaultVersion` (required) is an integer that is included in `validVersions`. Defines which version to use if no headers are sent.
 - `vendorName` (required, if no getVersion function defined) is a string. Defines the vendor name used in the `accept` header.
 - `passiveMode` (optional) is a boolean. Allows to bypass when no headers are supplied. Useful when you have serve other content like documentation and reduces overhead on processing those.
 - `basePath` (optional) is a string. In case we have a base path different from `/` (example: `/api/`). Per default this is `/`.
-- `getVersion` (required, if no vendorName defined) is a string. Defines the vendor name used in the `accept` header.
-- `invalidVersionErrorCode` (optionsl) is a integer, used to respond to invalid versions. Defaults to 415.
+- `getVersion` (required, if no vendorName defined) is a string. Return an integer to define the requested version, or null/undefined if no version was provided.
+- `invalidVersionErrorCode` (optional) is a integer, used to respond to invalid versions. Defaults to 415.
 
-* NOTE: One of `vendorName` or the `getVersion` function must be defined *
+*NOTE: One of `vendorName` or the `getVersion` function must be defined*
 
 ### Getting the requested API version in the handler
 
