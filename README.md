@@ -8,7 +8,7 @@ An API versioning plugin for [hapi](http://hapijs.com/).
 
 ## Features / Goals
 
-- Supports versioning using mediaTypes defined via `accept` header, as described on [github.com](https://developer.github.com/v3/media/)
+- Supports versioning using mediaTypes defined via `accept` header, as described by the [media type specification](https://tools.ietf.org/html/rfc6838) and used on [github.com](https://developer.github.com/v3/media/)
 - Allows custom function to extract the version number from a request
 - Allows the plugin to be registered multiple times (for example, you could apply the plugin multiple times - each with a custom function to provide multiple options to specify an api version, such as querystring, url path and the default mediaType accept header)
 - 100% test coverage
@@ -19,6 +19,10 @@ An API versioning plugin for [hapi](http://hapijs.com/).
 ## Requirements
 
 Runs with Node >=4 and hapi >=10 which is tested with Travis CI.
+
+## A note about creating media type headers
+
+If you create a custom media type, be sure to register it with the [iana](http://www.iana.org/form/media-types)
 
 ## Installation
 
